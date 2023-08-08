@@ -18,6 +18,8 @@ public class MonsterController : MonoBehaviour
     private int playerGridPositionX;                                // 플레이어가 그리드의 몇 번째 열에 있는지
     private int playerGridPositionY;                                // 플레이어가 그리드의 몇 번째 행에 있는지
 
+    private int monsterMoveCount;                                   // 총 몇 번 움직였는지
+
     public Vector3 MoveDirection { get; set; } = Vector3.zero;      // 이동 방향
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
     private float[] positionInGrid = new float[10];                 // 그리드 내의 position 값 저장
@@ -28,6 +30,7 @@ public class MonsterController : MonoBehaviour
 
     private void Awake()
     {
+        monsterMoveCount = 0;
         ResetMosnterPosition();
         SetPositionInGrid();
     }
@@ -64,23 +67,29 @@ public class MonsterController : MonoBehaviour
 
     public void Move()
     {
-        // 이동할 곳에 플레이어가 없으면
-        if (((gridPositionX + (int)MoveDirection.x) == playerGridPositionX && (gridPositionY + (int)MoveDirection.y) == playerGridPositionY) == false)
+        if (hp == 0)
         {
-            gridPositionX += (int)MoveDirection.x;
-            gridPositionY += (int)MoveDirection.y;
+            return;
         }
 
         // 그리드 범위를 넘어가지 않으면
-        if (!(1 > gridPositionX || gridPositionX > 7
-            || 1 > gridPositionY || gridPositionY > 7))
+        if (1 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= gridMatrixNum
+            && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
         {
-            Vector3 moveDirection = Vector3.zero;
-            moveDirection.x = positionInGrid[gridPositionX];
-            moveDirection.y = positionInGrid[gridPositionY];
-            Vector3 end = moveDirection;
+            // 이동할 곳에 플레이어가 없으면
+            if (((gridPositionX + (int)MoveDirection.x) == playerGridPositionX && (gridPositionY + (int)MoveDirection.y) == playerGridPositionY) == false)
+            {
+                gridPositionX += (int)MoveDirection.x;
+                gridPositionY += (int)MoveDirection.y;
 
-            StartCoroutine(GridSmoothMovement(end));
+                Vector3 moveDirection = Vector3.zero;
+                moveDirection.x = positionInGrid[gridPositionX];
+                moveDirection.y = positionInGrid[gridPositionY];
+                Vector3 end = moveDirection;
+
+                monsterMoveCount++;
+                StartCoroutine(GridSmoothMovement(end));
+            }
         }
 
         else
@@ -128,6 +137,10 @@ public class MonsterController : MonoBehaviour
             startValue += gridSize;
         }
     }
+    public int GetPositionXYInGrid()
+    {
+        return (gridPositionX * 10) + gridPositionY;
+    }
 
     public void SetPlayerGridPosition(int playerGridPosition)
     {
@@ -135,9 +148,26 @@ public class MonsterController : MonoBehaviour
         this.playerGridPositionX = playerGridPosition / 10;
         this.playerGridPositionY = playerGridPosition % 10;
     }
+    public int GetMoveCount()
+    {
+        return monsterMoveCount;
+    }
+    public int GetHp()
+    {
+        return hp;
+    }
 
+    public void Damaged()
+    {
+        hp--;
+        if (hp == 0)
+        {
+            Die();
+        }
+    }
     public void Die()
     {
+        // 죽는 애니메이션 넣고 애니메이션 마지막에 Destroy 함수 호출
         Destroy(this.gameObject);
     }
 }

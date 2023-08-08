@@ -201,6 +201,23 @@ public class MonsterManager : MonoBehaviour
         }
         waveCount = nextWaveCount;
     }
+
+    public bool KillCheckThisTurn(int x, int y)
+    {
+        for (int i = numberOfMonsters; i >= 1; --i)
+        {
+            int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+
+            if ((monsterGridPositionXY / 10) == x && (monsterGridPositionXY % 10) == y)
+            {
+                this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().Die();
+                numberOfMonsters--;
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private void DestroyMpnsters()
     {
         for (int i = numberOfMonsters; i >= 1; --i)

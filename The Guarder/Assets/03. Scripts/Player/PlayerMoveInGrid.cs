@@ -10,18 +10,24 @@ public class PlayerMoveInGrid : MonoBehaviour
     [SerializeField]
     private float gridSize = 0.7f;                                  // 1칸 이동할때 거리
     [SerializeField]
-    private int gridMatrixNum = 7;                                // 그리드 x, y 칸 수;
+    private int gridMatrixNum = 7;                                  // 그리드 x, y 칸 수;
     [SerializeField]   
     private int gridPositionY;                                      // 그리드의 몇 번째 행에 있는지
     [SerializeField]
     private int gridPositionX;                                      // 그리드의 몇 번째 열에 있는지
+    private int nextGridPositionY;
+    private int nextGridPositionX;
+
+    private bool oneStepKill = false;                               // 한 칸 이동 킬인지
+    private bool twoStepKill = false;                               // 두 칸 이동 킬인지
 
     public Vector3 MoveDirection { get; set; } = Vector3.zero;      // 이동 방향
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
 
-    private float[] positionInGrid = new float[10];             // 그리드 내의 position 값 저장
+    private float[] positionInGrid = new float[10];                 // 그리드 내의 position 값 저장
 
     public GameObject GameSceneManager;
+    public GameObject MonsterManager;
         
     private void Awake()
     {
@@ -35,23 +41,42 @@ public class PlayerMoveInGrid : MonoBehaviour
         {
             if(MoveDirection != Vector3.zero && IsMove == false)
             {
-
-                if (1 <= gridPositionX + MoveDirection.x  && gridPositionX + MoveDirection.x <= gridMatrixNum
+                // 플레이어가 이동 가능한지 체크
+                if (1 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= gridMatrixNum
                     && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
                 {
-                    gridPositionX += (int)MoveDirection.x;
-                    gridPositionY += (int)MoveDirection.y;
+                    nextGridPositionX = gridPositionX + (int)MoveDirection.x;
+                    nextGridPositionY = gridPositionY + (int)MoveDirection.y;
+
+                    oneStepKill = false;
+                    twoStepKill = false;
+
+                    // 이동 하는 칸에 몬스터가 있는지 확인
+                    KillCheck();
+
+                    // 플레이어가 몬스터를 못 잡았으면 몬스터 이동
+                    if (oneStepKill == false && twoStepKill == false)
+                    {
+                        GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
+                    }
+
+                    Vector3 moveDirection = Vector3.zero;
+                    moveDirection.x = positionInGrid[nextGridPositionX];
+                    moveDirection.y = positionInGrid[nextGridPositionY];
+
+                    Vector3 end = moveDirection;
+
+                    gridPositionX = nextGridPositionX;
+                    gridPositionY = nextGridPositionY;
+
+                    yield return StartCoroutine(GridSmoothMovement(end));
                 }
-                Vector3 moveDirection = Vector3.zero;
-                moveDirection.x = positionInGrid[gridPositionX];
-                moveDirection.y = positionInGrid[gridPositionY];
-
-                Vector3 end = moveDirection;
-
-                // 몬스터 이동할지 결정
-                GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
-
-                yield return StartCoroutine(GridSmoothMovement(end));
+                else
+                {
+                    // 플레이어 이동 시간만큼 딜레이를 주기 위함
+                    yield return new WaitForSeconds(moveTime);
+                    GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
+                }
             }
             yield return null;
         }
@@ -76,6 +101,34 @@ public class PlayerMoveInGrid : MonoBehaviour
         }
 
         IsMove = false;
+    }
+
+    private void KillCheck()
+    {
+        // 한 칸 움직여서 잡을 애가 있는지
+        oneStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(nextGridPositionX, nextGridPositionY);
+
+        // 두칸 움직여서 잡을 애가 있는지
+        if (oneStepKill == false)
+        {
+            if (1 <= nextGridPositionX + MoveDirection.x && nextGridPositionX + MoveDirection.x <= gridMatrixNum
+                && 1 <= nextGridPositionY + MoveDirection.y && nextGridPositionY + MoveDirection.y <= gridMatrixNum)
+            {
+                int twoStepGridPositionX = nextGridPositionX + (int)MoveDirection.x;
+                int twoStepGridPositionY = nextGridPositionY + (int)MoveDirection.y;
+                twoStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(twoStepGridPositionX, twoStepGridPositionY);
+
+                if(twoStepKill == true)
+                {
+                    nextGridPositionX = twoStepGridPositionX;
+                    nextGridPositionY = twoStepGridPositionY;
+                }
+            }
+            else
+            {
+                twoStepKill = false;
+            }
+        }
     }
 
     public void ResetPlayerPosition()
