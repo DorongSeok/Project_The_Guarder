@@ -26,7 +26,7 @@ public class GameSceneController : MonoBehaviour
         monsterManager.GetComponent<MonsterManager>().ResetMonsterMap();
         monsterManager.GetComponent<MonsterManager>().ResetNextWave();
     }
-    private void MoveOnToNextStep()
+    public void MoveOnToNextStep()
     {
         monsterManager.GetComponent<MonsterManager>().MoveOnToNextStep();
     }

@@ -20,6 +20,8 @@ public class PlayerMoveInGrid : MonoBehaviour
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
 
     private float[] positionInGrid = new float[10];             // 그리드 내의 position 값 저장
+
+    public GameObject GameSceneManager;
         
     private void Awake()
     {
@@ -33,7 +35,9 @@ public class PlayerMoveInGrid : MonoBehaviour
         {
             if(MoveDirection != Vector3.zero && IsMove == false)
             {
-                if(1 <= gridPositionX + MoveDirection.x  && gridPositionX + MoveDirection.x <= gridMatrixNum
+                GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
+
+                if (1 <= gridPositionX + MoveDirection.x  && gridPositionX + MoveDirection.x <= gridMatrixNum
                     && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
                 {
                     gridPositionX += (int)MoveDirection.x;
