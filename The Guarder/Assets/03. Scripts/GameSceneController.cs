@@ -21,7 +21,7 @@ public class GameSceneController : MonoBehaviour
         }
         if (Input.GetKeyUp(KeyCode.X))
         {
-            SetGameLevel(gameLevel + 1);
+            LevelUp();
         }
     }
     private void GameReset()
@@ -49,5 +49,8 @@ public class GameSceneController : MonoBehaviour
         // X 는 10의 자리로 Y 는 1의 자리로
         return player.GetComponent<PlayerMoveInGrid>().GetPlayerGridPosition();
     }
-
+    public void LevelUp()
+    {
+        SetGameLevel(gameLevel + 1);
+    }
 }

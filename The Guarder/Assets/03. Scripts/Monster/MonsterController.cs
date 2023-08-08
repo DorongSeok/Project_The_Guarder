@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterMoveInGrid : MonoBehaviour
+public class MonsterController : MonoBehaviour
 {
     [SerializeField]
     private float moveTime = 0.5f;                                  // 1칸 이동에 소요되는 시간
@@ -134,5 +134,10 @@ public class MonsterMoveInGrid : MonoBehaviour
         // 10의 자리는 X, 1의 자리는 Y
         this.playerGridPositionX = playerGridPosition / 10;
         this.playerGridPositionY = playerGridPosition % 10;
+    }
+
+    public void Die()
+    {
+        Destroy(this.gameObject);
     }
 }
