@@ -148,13 +148,22 @@ public class MonsterController : MonoBehaviour
         this.playerGridPositionX = playerGridPosition / 10;
         this.playerGridPositionY = playerGridPosition % 10;
     }
-    public int GetMoveCount()
+    public int GetMonsterMapStatus()
     {
-        return monsterMoveCount;
+        // 100의 자리 = 방향, 10의 자리 = hp, 1의 자리 = 이동 횟수
+        return (moveDirectionNumber * 100) + (hp * 10) + monsterMoveCount;
+    }
+    public int GetMoveDirectionNumber()
+    {
+        return moveDirectionNumber;
     }
     public int GetHp()
     {
         return hp;
+    }
+    public int GetMoveCount()
+    {
+        return monsterMoveCount;
     }
 
     public void Damaged()
@@ -169,5 +178,55 @@ public class MonsterController : MonoBehaviour
     {
         // 죽는 애니메이션 넣고 애니메이션 마지막에 Destroy 함수 호출
         Destroy(this.gameObject);
+    }
+    public void MoveAndDie()
+    {
+        if (hp == 0)
+        {
+            return;
+        }
+
+        // 그리드 범위를 넘어가지 않으면
+        if (1 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= gridMatrixNum
+            && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
+        {
+            gridPositionX += (int)MoveDirection.x;
+            gridPositionY += (int)MoveDirection.y;
+
+            Vector3 moveDirection = Vector3.zero;
+            moveDirection.x = positionInGrid[gridPositionX];
+            moveDirection.y = positionInGrid[gridPositionY];
+            Vector3 end = moveDirection;
+
+            monsterMoveCount++;
+            StartCoroutine(GridSmoothMovementAndDie(end));
+        }
+
+        else
+        {
+            // Game Over
+            Debug.Log("GAME OVER!!");
+        }
+    }
+    private IEnumerator GridSmoothMovementAndDie(Vector3 end)
+    {
+        Vector3 start = transform.position;
+        float current = 0;
+        float percent = 0;
+
+        IsMove = true;
+
+        while (percent < 1)
+        {
+            current += Time.deltaTime;
+            percent = current / moveTime;
+
+            transform.position = Vector3.Lerp(start, end, percent);
+
+            yield return null;
+        }
+
+        IsMove = false;
+        Die();
     }
 }

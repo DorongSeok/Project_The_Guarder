@@ -20,6 +20,8 @@ public class PlayerMoveInGrid : MonoBehaviour
 
     private bool oneStepKill = false;                               // 한 칸 이동 킬인지
     private bool twoStepKill = false;                               // 두 칸 이동 킬인지
+    private bool oneStepNextTurnKill = false;                       // 한 칸 이동 다음턴 킬인지
+    private bool twoStepNextTurnKill = false;                       // 두 칸 이동 다음턴 킬인지
 
     public Vector3 MoveDirection { get; set; } = Vector3.zero;      // 이동 방향
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
@@ -48,14 +50,12 @@ public class PlayerMoveInGrid : MonoBehaviour
                     nextGridPositionX = gridPositionX + (int)MoveDirection.x;
                     nextGridPositionY = gridPositionY + (int)MoveDirection.y;
 
-                    oneStepKill = false;
-                    twoStepKill = false;
-
                     // 이동 하는 칸에 몬스터가 있는지 확인
                     KillCheck();
 
                     // 플레이어가 몬스터를 못 잡았으면 몬스터 이동
-                    if (oneStepKill == false && twoStepKill == false)
+                    if (oneStepKill == false && twoStepKill == false &&
+                        oneStepNextTurnKill == false && twoStepNextTurnKill == false)
                     {
                         GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
                     }
@@ -105,28 +105,57 @@ public class PlayerMoveInGrid : MonoBehaviour
 
     private void KillCheck()
     {
+        oneStepKill = false;
+        twoStepKill = false;
+        oneStepNextTurnKill = false;
+        twoStepNextTurnKill = false;
+        MonsterManager.GetComponent<MonsterManager>().DrawMonsterMap();
+
         // 한 칸 움직여서 잡을 애가 있는지
         oneStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(nextGridPositionX, nextGridPositionY);
+        if (oneStepKill == true)
+        {
+            return;
+        }
 
         // 두칸 움직여서 잡을 애가 있는지
-        if (oneStepKill == false)
+        if (1 <= nextGridPositionX + MoveDirection.x && nextGridPositionX + MoveDirection.x <= gridMatrixNum
+            && 1 <= nextGridPositionY + MoveDirection.y && nextGridPositionY + MoveDirection.y <= gridMatrixNum)
         {
-            if (1 <= nextGridPositionX + MoveDirection.x && nextGridPositionX + MoveDirection.x <= gridMatrixNum
-                && 1 <= nextGridPositionY + MoveDirection.y && nextGridPositionY + MoveDirection.y <= gridMatrixNum)
-            {
-                int twoStepGridPositionX = nextGridPositionX + (int)MoveDirection.x;
-                int twoStepGridPositionY = nextGridPositionY + (int)MoveDirection.y;
-                twoStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(twoStepGridPositionX, twoStepGridPositionY);
+            int twoStepGridPositionX = nextGridPositionX + (int)MoveDirection.x;
+            int twoStepGridPositionY = nextGridPositionY + (int)MoveDirection.y;
+            twoStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(twoStepGridPositionX, twoStepGridPositionY);
 
-                if(twoStepKill == true)
-                {
-                    nextGridPositionX = twoStepGridPositionX;
-                    nextGridPositionY = twoStepGridPositionY;
-                }
-            }
-            else
+            if (twoStepKill == true)
             {
-                twoStepKill = false;
+                nextGridPositionX = twoStepGridPositionX;
+                nextGridPositionY = twoStepGridPositionY;
+            }
+        }
+        if (twoStepKill == true)
+        {
+            return;
+        }
+
+        // 한 칸 움직여서 다음 턴에 잡을 애가 있는지
+        oneStepNextTurnKill = MonsterManager.GetComponent<MonsterManager>().KillCheckNextTurn(nextGridPositionX, nextGridPositionY);
+        if (oneStepNextTurnKill == true)
+        {
+            return;
+        }
+        
+        // 두 칸 움직여서 다음 턴에 잡을 애가 있는지
+        if (1 <= nextGridPositionX + MoveDirection.x && nextGridPositionX + MoveDirection.x <= gridMatrixNum
+            && 1 <= nextGridPositionY + MoveDirection.y && nextGridPositionY + MoveDirection.y <= gridMatrixNum)
+        {
+            int twoStepGridPositionX = nextGridPositionX + (int)MoveDirection.x;
+            int twoStepGridPositionY = nextGridPositionY + (int)MoveDirection.y;
+            twoStepNextTurnKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(twoStepGridPositionX, twoStepGridPositionY);
+        
+            if (twoStepNextTurnKill == true)
+            {
+                nextGridPositionX = twoStepGridPositionX;
+                nextGridPositionY = twoStepGridPositionY;
             }
         }
     }

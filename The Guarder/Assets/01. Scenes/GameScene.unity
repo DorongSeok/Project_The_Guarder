@@ -455,7 +455,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71eef3ed437e99748883950c235b0c30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameLevel: 1
+  gameLevel: 1
   player: {fileID: 369622646}
   monsterManager: {fileID: 1352135482}
 --- !u!1001 &5327286532285516390
@@ -514,6 +514,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 8132733459883267541, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: MonsterManager
+      value: 
+      objectReference: {fileID: 1352135482}
     - target: {fileID: 8132733459883267541, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
       propertyPath: GameSceneManager
       value: 

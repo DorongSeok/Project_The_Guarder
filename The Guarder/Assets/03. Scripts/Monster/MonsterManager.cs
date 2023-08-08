@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MonsterManager : MonoBehaviour
 {
-    private int[,] MonsterMap = new int[8, 8];
+    private int[,] monsterMap = new int[9, 9];
     private bool[] nextWave = new bool[28];
     private int[,] monsterStartGridPosition = new int[28,2];
     private int numberOfMonsters = 0;
@@ -34,6 +34,7 @@ public class MonsterManager : MonoBehaviour
         MoveMonsters();
         CreateMonsters();
         CreateNextWave();
+        DrawMonsterMap();
     }
 
     public void ResetMonsterManager()
@@ -42,18 +43,32 @@ public class MonsterManager : MonoBehaviour
         ApplyGameLevel();
         ResetMonsterMap();
         ResetNextWave();
+        numberOfMonsters = 0;
     }
 
     
     public void ResetMonsterMap()
     {
-        numberOfMonsters = 0;
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < 9; ++i)
         {
             for (int j = 0; j < 8; ++j)
             {
-                MonsterMap[i, j] = 0;
+                monsterMap[i, j] = 0;
             }
+        }
+    }
+    public void DrawMonsterMap()
+    {
+        ResetMonsterMap();
+
+        for (int i = numberOfMonsters; i >= 1; --i)
+        {
+            int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+
+            // 100의 자리 = 방향, 10의 자리 = hp, 1의 자리 = 이동 횟수
+            int monsterMapStatus = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetMonsterMapStatus();
+            
+            monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10] = monsterMapStatus;
         }
     }
     public void ResetNextWave()
@@ -217,7 +232,105 @@ public class MonsterManager : MonoBehaviour
         }
         return false;
     }
-    
+    public bool KillCheckNextTurn(int x, int y)
+    {
+        // 킬 할 수 있는 몬스터의 자식 객체 넘버
+        int killMonsterNumber = 0;
+        bool canKill = true;
+
+        // 위에서 내려오는 몬스터 체크
+        if ((y + 1) <= 7 && monsterMap[y + 1, x] / 100 == 3)
+        {
+            for (int i = numberOfMonsters; i >= 1; --i)
+            {
+                int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+                if ((monsterGridPositionXY / 10) == x && (monsterGridPositionXY % 10) == (y + 1))
+                {
+                    killMonsterNumber = i;
+                    if (canKill == true)
+                    {
+                        canKill = false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    break;
+                }
+            }
+        }
+        // 오른쪽에서 왼쪽으로 오는 몬스터 체크
+        else if ((x + 1) <= 7 && monsterMap[y, x + 1] / 100 == 4)
+        {
+            for (int i = numberOfMonsters; i >= 1; --i)
+            {
+                int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+                if ((monsterGridPositionXY / 10) == (x + 1) && (monsterGridPositionXY % 10) == y)
+                {
+                    killMonsterNumber = i;
+                    if (canKill == true)
+                    {
+                        canKill = false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    break;
+                }
+            }
+        }
+        // 아래에서 올라 오는 몬스터 체크
+        else if ((y - 1) >= 1 && monsterMap[y - 1, x] / 100 == 1)
+        {
+            for (int i = numberOfMonsters; i >= 1; --i)
+            {
+                int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+                if ((monsterGridPositionXY / 10) == x && (monsterGridPositionXY % 10) == (y - 1))
+                {
+                    killMonsterNumber = i;
+                    if (canKill == true)
+                    {
+                        canKill = false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    break;
+                }
+            }
+        }
+        // 왼쪽에서 오른쪽으로 오는 몬스터 체크
+        else if ((x - 1) >= 1 && monsterMap[y, x - 1] / 100 == 2)
+        {
+            for (int i = numberOfMonsters; i >= 1; --i)
+            {
+                int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+                if ((monsterGridPositionXY / 10) == (x - 1) && (monsterGridPositionXY % 10) == y)
+                {
+                    killMonsterNumber = i;
+                    if (canKill == true)
+                    {
+                        canKill = false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    break;
+                }
+            }
+        }
+        if (killMonsterNumber > 0)
+        {
+            this.transform.GetChild(killMonsterNumber).gameObject.GetComponent<MonsterController>().MoveAndDie();
+            numberOfMonsters--;
+            return true;
+        }
+        return false;
+    }
+
     private void DestroyMpnsters()
     {
         for (int i = numberOfMonsters; i >= 1; --i)
