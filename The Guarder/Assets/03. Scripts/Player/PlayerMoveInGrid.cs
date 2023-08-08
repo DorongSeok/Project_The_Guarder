@@ -35,7 +35,6 @@ public class PlayerMoveInGrid : MonoBehaviour
         {
             if(MoveDirection != Vector3.zero && IsMove == false)
             {
-                GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
 
                 if (1 <= gridPositionX + MoveDirection.x  && gridPositionX + MoveDirection.x <= gridMatrixNum
                     && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
@@ -48,6 +47,9 @@ public class PlayerMoveInGrid : MonoBehaviour
                 moveDirection.y = positionInGrid[gridPositionY];
 
                 Vector3 end = moveDirection;
+
+                // 몬스터 이동할지 결정
+                GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
 
                 yield return StartCoroutine(GridSmoothMovement(end));
             }
@@ -93,5 +95,11 @@ public class PlayerMoveInGrid : MonoBehaviour
             positionInGrid[i] = Mathf.Round(startValue * 10) * 0.1f;    // 소수점 둘째자리에서 반올림
             startValue += gridSize;
         }
+    }
+
+    public int GetPlayerGridPosition()
+    {
+        // X 는 10의 자리로 Y 는 1의 자리로
+        return (gridPositionX * 10) + gridPositionY;
     }
 }

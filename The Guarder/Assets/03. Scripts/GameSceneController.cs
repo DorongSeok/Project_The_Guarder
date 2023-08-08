@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameSceneController : MonoBehaviour
 {
     [SerializeField]
-    private int GameLevel = 1;
+    private int gameLevel = 1;
     public GameObject player;
     public GameObject monsterManager;
 
@@ -15,16 +15,19 @@ public class GameSceneController : MonoBehaviour
         {
             GameReset();
         }
-        if (Input.GetKeyUp(KeyCode.Q))
+        if (Input.GetKeyUp(KeyCode.Z))
         {
             MoveOnToNextStep();
+        }
+        if (Input.GetKeyUp(KeyCode.X))
+        {
+            SetGameLevel(gameLevel + 1);
         }
     }
     private void GameReset()
     {
         player.GetComponent<PlayerMoveInGrid>().ResetPlayerPosition();
-        monsterManager.GetComponent<MonsterManager>().ResetMonsterMap();
-        monsterManager.GetComponent<MonsterManager>().ResetNextWave();
+        monsterManager.GetComponent<MonsterManager>().ResetMonsterManager();
     }
     public void MoveOnToNextStep()
     {
@@ -33,11 +36,18 @@ public class GameSceneController : MonoBehaviour
 
     public int GetLevel()
     {
-        return GameLevel;
+        return gameLevel;
     }
     public void SetGameLevel(int gameLevel)
     {
-        GameLevel = gameLevel;
+        this.gameLevel = gameLevel;
+        monsterManager.GetComponent<MonsterManager>().ApplyGameLevel();
+    }
+
+    public int GetPlayerGridPosition()
+    {
+        // X 는 10의 자리로 Y 는 1의 자리로
+        return player.GetComponent<PlayerMoveInGrid>().GetPlayerGridPosition();
     }
 
 }

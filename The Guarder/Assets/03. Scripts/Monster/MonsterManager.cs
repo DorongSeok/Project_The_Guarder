@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class MonsterManager : MonoBehaviour
 {
-    private int[,] nowMonsterMap = new int[8, 8];
-    private int[,] nextMonsterMap = new int[8, 8];
+    private int[,] MonsterMap = new int[8, 8];
     private bool[] nextWave = new bool[28];
     private int[,] monsterStartGridPosition = new int[28,2];
     private int numberOfMonsters = 0;
 
     private int gameLevel;
+    [SerializeField]
+    private int nextWaveCount;                  // 다음 몬스터가 생성될 때까지 필요한 턴
+    [SerializeField]
+    private int waveCount;
+    [SerializeField]
+    private int numberOfCreateNextWaveMonster;
 
     public GameObject GameSceneManager;
     public GameObject NextWaveObject;
@@ -18,17 +23,23 @@ public class MonsterManager : MonoBehaviour
 
     void Start()
     {
+        ResetMonsterManager();
         SetMonsterStartGridPosition();
-        ResetMonsterMap();
-        ResetNextWave();
     }
-
     public void MoveOnToNextStep()
     {
         MoveMonsters();
         CreateMonsters();
         CreateNextWave();
     }
+
+    public void ResetMonsterManager()
+    {
+        ApplyGameLevel();
+        ResetMonsterMap();
+        ResetNextWave();
+    }
+
     
     public void ResetMonsterMap()
     {
@@ -37,8 +48,7 @@ public class MonsterManager : MonoBehaviour
         {
             for (int j = 0; j < 8; ++j)
             {
-                nowMonsterMap[i, j] = 0;
-                nextMonsterMap[i, j] = 0;
+                MonsterMap[i, j] = 0;
             }
         }
     }
@@ -49,14 +59,16 @@ public class MonsterManager : MonoBehaviour
             nextWave[i] = false;
             NextWaveObject.transform.GetChild(i).gameObject.SetActive(nextWave[i]);
         }
-        CreateNextWave();
+        CreateFirstWave();
     }
     private void MoveMonsters()
     {
         if (numberOfMonsters > 0)
         {
+            int playerGridPosition = GameSceneManager.GetComponent<GameSceneController>().GetPlayerGridPosition();
             for (int i = 1; i <= numberOfMonsters; ++i)
             {
+                this.transform.GetChild(i).gameObject.GetComponent<MonsterMoveInGrid>().SetPlayerGridPosition(playerGridPosition);
                 this.transform.GetChild(i).gameObject.GetComponent<MonsterMoveInGrid>().Move();
             }
         }
@@ -99,13 +111,11 @@ public class MonsterManager : MonoBehaviour
             NextWaveObject.transform.GetChild(i).gameObject.SetActive(nextWave[i]);
         }
     }
-
-    private void CreateNextWave()
+    private void CreateFirstWave()
     {
-        gameLevel = GameSceneManager.GetComponent<GameSceneController>().GetLevel();
-        int maxNumberOfNextWaveMonster = gameLevel;
+        int maxNumberOfNextWaveMonster = 1;
 
-        while(maxNumberOfNextWaveMonster > 0)
+        while (maxNumberOfNextWaveMonster > 0)
         {
             int random = Random.Range(0, 28);
             if (nextWave[random] == false)
@@ -115,11 +125,75 @@ public class MonsterManager : MonoBehaviour
             }
         }
 
-        for(int i = 0; i < 28; ++i)
+        for (int i = 0; i < 28; ++i)
         {
             NextWaveObject.transform.GetChild(i).gameObject.SetActive(nextWave[i]);
         }
     }
+    private void CreateNextWave()
+    {
+        waveCount--;
+
+        if (waveCount < 1)
+        {
+            waveCount = nextWaveCount;
+            int maxNumberOfNextWaveMonster = numberOfCreateNextWaveMonster;
+
+            while (maxNumberOfNextWaveMonster > 0)
+            {
+                int random = Random.Range(0, 28);
+                if (nextWave[random] == false)
+                {
+                    nextWave[random] = true;
+                    maxNumberOfNextWaveMonster--;
+                }
+            }
+
+            for (int i = 0; i < 28; ++i)
+            {
+                NextWaveObject.transform.GetChild(i).gameObject.SetActive(nextWave[i]);
+            }
+        }
+    }
+
+    public void ApplyGameLevel()
+    {
+        // 레벨별 게임 난이도 설정
+        gameLevel = GameSceneManager.GetComponent<GameSceneController>().GetLevel();
+        switch (gameLevel)
+        {
+            case 1:
+                numberOfCreateNextWaveMonster = 1;
+                nextWaveCount = 3;
+                break;
+            case 2:
+                numberOfCreateNextWaveMonster = 1;
+                nextWaveCount = 2;
+                break;
+            case 3:
+                numberOfCreateNextWaveMonster = 2;
+                nextWaveCount = 3;
+                break;
+            case 4:
+                numberOfCreateNextWaveMonster = 2;
+                nextWaveCount = 2;
+                break;
+            case 5:
+                numberOfCreateNextWaveMonster = 1;
+                nextWaveCount = 1;
+                break;
+            case 6:
+                numberOfCreateNextWaveMonster = 3;
+                nextWaveCount = 2;
+                break;
+            default:
+                numberOfCreateNextWaveMonster = 3;
+                nextWaveCount = 1;
+                break;
+        }
+        waveCount = nextWaveCount;
+    }
+
     private void SetMonsterStartGridPosition()
     {
         monsterStartGridPosition[0, 0] = 1;

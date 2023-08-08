@@ -9,11 +9,14 @@ public class MonsterMoveInGrid : MonoBehaviour
     [SerializeField]
     private float gridSize = 0.7f;                                  // 1칸 이동할때 거리
     [SerializeField]
-    private int gridMatrixNum = 7;                                // 그리드 x, y 칸 수;
+    private int gridMatrixNum = 7;                                  // 그리드 x, y 칸 수;
     [SerializeField]
     private int gridPositionY;                                      // 그리드의 몇 번째 행에 있는지
     [SerializeField]
     private int gridPositionX;                                      // 그리드의 몇 번째 열에 있는지
+
+    private int playerGridPositionX;                                // 플레이어가 그리드의 몇 번째 열에 있는지
+    private int playerGridPositionY;                                // 플레이어가 그리드의 몇 번째 행에 있는지
 
     public Vector3 MoveDirection { get; set; } = Vector3.zero;      // 이동 방향
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
@@ -61,9 +64,14 @@ public class MonsterMoveInGrid : MonoBehaviour
 
     public void Move()
     {
-        gridPositionX += (int)MoveDirection.x;
-        gridPositionY += (int)MoveDirection.y;
+        // 이동할 곳에 플레이어가 없으면
+        if (((gridPositionX + (int)MoveDirection.x) == playerGridPositionX && (gridPositionY + (int)MoveDirection.y) == playerGridPositionY) == false)
+        {
+            gridPositionX += (int)MoveDirection.x;
+            gridPositionY += (int)MoveDirection.y;
+        }
 
+        // 그리드 범위를 넘어가지 않으면
         if (!(1 > gridPositionX || gridPositionX > 7
             || 1 > gridPositionY || gridPositionY > 7))
         {
@@ -102,7 +110,6 @@ public class MonsterMoveInGrid : MonoBehaviour
         IsMove = false;
     }
 
-
     public void ResetMosnterPosition()
     {
         transform.position = Vector3.zero;
@@ -120,5 +127,12 @@ public class MonsterMoveInGrid : MonoBehaviour
             positionInGrid[i] = Mathf.Round(startValue * 10) * 0.1f;    // 소수점 둘째자리에서 반올림
             startValue += gridSize;
         }
+    }
+
+    public void SetPlayerGridPosition(int playerGridPosition)
+    {
+        // 10의 자리는 X, 1의 자리는 Y
+        this.playerGridPositionX = playerGridPosition / 10;
+        this.playerGridPositionY = playerGridPosition % 10;
     }
 }
