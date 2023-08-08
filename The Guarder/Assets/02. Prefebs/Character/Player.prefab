@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35432e5f53f917249beda36e84ce6477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minSwipeLength: 200
 --- !u!114 &8132733459883267541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,4 +139,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 674a2ba9131568d43b7cda43237e712f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTime: 0.5
+  moveTime: 0.2
+  gridSize: 0.7
+  gridMatrixNum: 7
+  gridPositionY: 0
+  gridPositionX: 0
