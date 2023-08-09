@@ -22,7 +22,6 @@ public class MonsterController : MonoBehaviour
 
     public Vector3 MoveDirection { get; set; } = Vector3.zero;      // 이동 방향
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
-    private bool isDie = false;
     private float[] positionInGrid = new float[10];                 // 그리드 내의 position 값 저장
     [SerializeField]
     private int moveDirectionNumber;                                // 이동 방향 (1상, 2우, 3하, 4좌)
@@ -71,8 +70,6 @@ public class MonsterController : MonoBehaviour
         SpriteHp.transform.GetChild(hp).gameObject.SetActive(true);
 
         this.monsterMoveCount = monsterMoveCount;
-
-        isDie = false;
     }
 
     public void Move()
@@ -99,13 +96,13 @@ public class MonsterController : MonoBehaviour
 
                 monsterMoveCount++;
                 StartCoroutine(GridSmoothMovement(end));
+                if (monsterMoveCount > 7)
+                {
+                    // Game Over
+                    Debug.Log("GAME OVER!!");
+                    GameObject.Find("GameManager").GetComponent<GameSceneController>().GameOver();
+                }
             }
-        }
-
-        else
-        {
-            // Game Over
-            Debug.Log("GAME OVER!!");
         }
     }
     private IEnumerator GridSmoothMovement(Vector3 end)
@@ -217,6 +214,7 @@ public class MonsterController : MonoBehaviour
         {
             // Game Over
             Debug.Log("GAME OVER!!");
+            
         }
     }
     private IEnumerator GridSmoothMovementAndDie(Vector3 end)

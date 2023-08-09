@@ -739,3 +739,4 @@ MonoBehaviour:
   moveDirectionNumber: 0
   hp: 1
   SpriteHp: {fileID: 6478936315162505807}
+  GameManager: {fileID: 133324122339493404, guid: cf627e1394f0723479577707b6f4a4a7, type: 3}

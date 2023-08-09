@@ -7,13 +7,15 @@ public class PlayerContoller : MonoBehaviour
     private PlayerMoveInGrid playerMoveInGrid;
 
     public float minSwipeLength = 200f;
-    Vector2 firstPressPos;
-    Vector2 secondPressPos;
-    Vector2 currentSwipe;
-    float tweakFactor = 0.5f;
-
+    private Vector2 firstPressPos;
+    private Vector2 secondPressPos;
+    private Vector2 currentSwipe;
+    private float tweakFactor = 0.5f;
+    
     private float swipeX;
     private float swipeY;
+
+    private bool isGameOver = false;
 
     private void Awake()
     {
@@ -22,24 +24,24 @@ public class PlayerContoller : MonoBehaviour
 
     private void Update()
     {
-        bool isSwipe;
-        isSwipe = DetectSwipe();
-
-        if(isSwipe == true)
+        if (isGameOver == false)
         {
-            playerMoveInGrid.MoveDirection = new Vector3(swipeX, swipeY, 0);
-        }
-        else
-        {
-            float x = Input.GetAxisRaw("Horizontal");
-            float y = Input.GetAxisRaw("Vertical");
+            bool isSwipe;
+            isSwipe = DetectSwipe();
 
-            playerMoveInGrid.MoveDirection = new Vector3(x, y, 0);
+            if (isSwipe == true)
+            {
+                playerMoveInGrid.MoveDirection = new Vector3(swipeX, swipeY, 0);
+            }
+            else
+            {
+                float x = Input.GetAxisRaw("Horizontal");
+                float y = Input.GetAxisRaw("Vertical");
+
+                playerMoveInGrid.MoveDirection = new Vector3(x, y, 0);
+            }
         }
     }
-
-
-
     public bool DetectSwipe()
     {
         if (Input.touches.Length > 0)
@@ -131,5 +133,10 @@ public class PlayerContoller : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public void IsGameOver(bool _isGameOver)
+    {
+        isGameOver = _isGameOver;
     }
 }

@@ -8,6 +8,9 @@ public class GameSceneController : MonoBehaviour
     private int gameLevel = 1;
     public GameObject player;
     public GameObject monsterManager;
+    private bool isGameOver = false;
+
+    public GameObject GameOverText;
 
     private void Update()
     {
@@ -26,12 +29,19 @@ public class GameSceneController : MonoBehaviour
     }
     private void GameReset()
     {
+        isGameOver = false;
+        GameOverText.SetActive(false);
+        player.GetComponent<PlayerContoller>().IsGameOver(isGameOver);
+        player.GetComponent<PlayerMoveInGrid>().IsGameOver(isGameOver);
         player.GetComponent<PlayerMoveInGrid>().ResetPlayerPosition();
         monsterManager.GetComponent<MonsterManager>().ResetMonsterManager();
     }
     public void MoveOnToNextStep()
     {
-        monsterManager.GetComponent<MonsterManager>().MoveOnToNextStep();
+        if (isGameOver == false)
+        {
+            monsterManager.GetComponent<MonsterManager>().MoveOnToNextStep();
+        }
     }
 
     public int GetLevel()
@@ -52,5 +62,12 @@ public class GameSceneController : MonoBehaviour
     public void LevelUp()
     {
         SetGameLevel(gameLevel + 1);
+    }
+    public void GameOver()
+    {
+        isGameOver = true;
+        GameOverText.SetActive(true);
+        player.GetComponent<PlayerContoller>().IsGameOver(isGameOver);
+        player.GetComponent<PlayerMoveInGrid>().IsGameOver(isGameOver);
     }
 }

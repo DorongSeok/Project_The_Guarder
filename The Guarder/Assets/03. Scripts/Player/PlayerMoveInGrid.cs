@@ -30,6 +30,8 @@ public class PlayerMoveInGrid : MonoBehaviour
 
     public GameObject GameSceneManager;
     public GameObject MonsterManager;
+
+    private bool isGameOver = false;
         
     private void Awake()
     {
@@ -41,41 +43,44 @@ public class PlayerMoveInGrid : MonoBehaviour
     {
         while(true)
         {
-            if(MoveDirection != Vector3.zero && IsMove == false)
+            if (isGameOver == false)
             {
-                // 플레이어가 이동 가능한지 체크
-                if (1 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= gridMatrixNum
-                    && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
+                if (MoveDirection != Vector3.zero && IsMove == false)
                 {
-                    nextGridPositionX = gridPositionX + (int)MoveDirection.x;
-                    nextGridPositionY = gridPositionY + (int)MoveDirection.y;
-
-                    // 이동 하는 칸에 몬스터가 있는지 확인
-                    KillCheck();
-
-                    // 플레이어가 몬스터를 못 잡았으면 몬스터 이동
-                    if (oneStepKill == false && twoStepKill == false &&
-                        oneStepNextTurnKill == false && twoStepNextTurnKill == false)
+                    // 플레이어가 이동 가능한지 체크
+                    if (1 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= gridMatrixNum
+                        && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
                     {
+                        nextGridPositionX = gridPositionX + (int)MoveDirection.x;
+                        nextGridPositionY = gridPositionY + (int)MoveDirection.y;
+
+                        // 이동 하는 칸에 몬스터가 있는지 확인
+                        KillCheck();
+
+                        // 플레이어가 몬스터를 못 잡았으면 몬스터 이동
+                        if (oneStepKill == false && twoStepKill == false &&
+                            oneStepNextTurnKill == false && twoStepNextTurnKill == false)
+                        {
+                            GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
+                        }
+
+                        Vector3 moveDirection = Vector3.zero;
+                        moveDirection.x = positionInGrid[nextGridPositionX];
+                        moveDirection.y = positionInGrid[nextGridPositionY];
+
+                        Vector3 end = moveDirection;
+
+                        gridPositionX = nextGridPositionX;
+                        gridPositionY = nextGridPositionY;
+
+                        yield return StartCoroutine(GridSmoothMovement(end));
+                    }
+                    else
+                    {
+                        // 플레이어 이동 시간만큼 딜레이를 주기 위함
+                        yield return new WaitForSeconds(moveTime);
                         GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
                     }
-
-                    Vector3 moveDirection = Vector3.zero;
-                    moveDirection.x = positionInGrid[nextGridPositionX];
-                    moveDirection.y = positionInGrid[nextGridPositionY];
-
-                    Vector3 end = moveDirection;
-
-                    gridPositionX = nextGridPositionX;
-                    gridPositionY = nextGridPositionY;
-
-                    yield return StartCoroutine(GridSmoothMovement(end));
-                }
-                else
-                {
-                    // 플레이어 이동 시간만큼 딜레이를 주기 위함
-                    yield return new WaitForSeconds(moveTime);
-                    GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
                 }
             }
             yield return null;
@@ -183,5 +188,9 @@ public class PlayerMoveInGrid : MonoBehaviour
     {
         // X 는 10의 자리로 Y 는 1의 자리로
         return (gridPositionX * 10) + gridPositionY;
+    }
+    public void IsGameOver(bool _isGameOver)
+    {
+        isGameOver = _isGameOver;
     }
 }
