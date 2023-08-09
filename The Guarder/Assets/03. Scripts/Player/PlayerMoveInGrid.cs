@@ -55,7 +55,10 @@ public class PlayerMoveInGrid : MonoBehaviour
                         nextGridPositionY = gridPositionY + (int)MoveDirection.y;
 
                         // 이동 하는 칸에 몬스터가 있는지 확인
-                        KillCheck();
+                        if(KillCheck() == true)
+                        {
+                            GameSceneManager.GetComponent<GameSceneController>().AddScore(100);
+                        }
 
                         // 플레이어가 몬스터를 못 잡았으면 몬스터 이동
                         if (oneStepKill == false && twoStepKill == false &&
@@ -108,7 +111,7 @@ public class PlayerMoveInGrid : MonoBehaviour
         IsMove = false;
     }
 
-    private void KillCheck()
+    private bool KillCheck()
     {
         oneStepKill = false;
         twoStepKill = false;
@@ -120,7 +123,7 @@ public class PlayerMoveInGrid : MonoBehaviour
         oneStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(nextGridPositionX, nextGridPositionY);
         if (oneStepKill == true)
         {
-            return;
+            return true;
         }
 
         // 두칸 움직여서 잡을 애가 있는지
@@ -135,18 +138,15 @@ public class PlayerMoveInGrid : MonoBehaviour
             {
                 nextGridPositionX = twoStepGridPositionX;
                 nextGridPositionY = twoStepGridPositionY;
+                return true;
             }
-        }
-        if (twoStepKill == true)
-        {
-            return;
         }
 
         // 한 칸 움직여서 다음 턴에 잡을 애가 있는지
         oneStepNextTurnKill = MonsterManager.GetComponent<MonsterManager>().KillCheckNextTurn(nextGridPositionX, nextGridPositionY);
         if (oneStepNextTurnKill == true)
         {
-            return;
+            return true;
         }
         
         // 두 칸 움직여서 다음 턴에 잡을 애가 있는지
@@ -161,8 +161,10 @@ public class PlayerMoveInGrid : MonoBehaviour
             {
                 nextGridPositionX = twoStepGridPositionX;
                 nextGridPositionY = twoStepGridPositionY;
+                return true;
             }
         }
+        return false;
     }
 
     public void ResetPlayerPosition()

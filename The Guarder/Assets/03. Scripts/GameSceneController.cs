@@ -1,16 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameSceneController : MonoBehaviour
 {
     [SerializeField]
     private int gameLevel = 1;
+    [SerializeField]
+    private int gameScore = 0;
     public GameObject player;
     public GameObject monsterManager;
     private bool isGameOver = false;
 
     public GameObject GameOverText;
+
+    public Text ScoreText;
+    public Text LevelText;
 
     private void Update()
     {
@@ -27,9 +33,11 @@ public class GameSceneController : MonoBehaviour
             LevelUp();
         }
     }
-    private void GameReset()
+    public void GameReset()
     {
         isGameOver = false;
+        ScoreReset();
+        SetGameLevel(1);
         GameOverText.SetActive(false);
         player.GetComponent<PlayerContoller>().IsGameOver(isGameOver);
         player.GetComponent<PlayerMoveInGrid>().IsGameOver(isGameOver);
@@ -51,6 +59,7 @@ public class GameSceneController : MonoBehaviour
     public void SetGameLevel(int gameLevel)
     {
         this.gameLevel = gameLevel;
+        LevelText.text = "Level : " + gameLevel;
         monsterManager.GetComponent<MonsterManager>().ApplyGameLevel();
     }
 
@@ -63,11 +72,29 @@ public class GameSceneController : MonoBehaviour
     {
         SetGameLevel(gameLevel + 1);
     }
+    public void LevelDown()
+    {
+        if (gameLevel - 1 > 1)
+        {
+            SetGameLevel(gameLevel - 1);
+        }
+    }
+
     public void GameOver()
     {
         isGameOver = true;
         GameOverText.SetActive(true);
         player.GetComponent<PlayerContoller>().IsGameOver(isGameOver);
         player.GetComponent<PlayerMoveInGrid>().IsGameOver(isGameOver);
+    }
+    public void ScoreReset()
+    {
+        gameScore = 0;
+        ScoreText.text = "Score : " + gameScore;
+    }
+    public void AddScore(int _score)
+    {
+        gameScore += _score;
+        ScoreText.text = "Score : " + gameScore;
     }
 }
