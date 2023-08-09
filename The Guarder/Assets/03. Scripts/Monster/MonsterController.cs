@@ -9,7 +9,7 @@ public class MonsterController : MonoBehaviour
     [SerializeField]
     private float gridSize = 0.7f;                                  // 1칸 이동할때 거리
     [SerializeField]
-    private int gridMatrixNum = 7;                                  // 그리드 x, y 칸 수;
+    private int gridMatrixNum = 7;                                  // 그리드 x, y 칸 수 + 2;
     [SerializeField]
     private int gridPositionY;                                      // 그리드의 몇 번째 행에 있는지
     [SerializeField]
@@ -73,8 +73,8 @@ public class MonsterController : MonoBehaviour
         }
 
         // 그리드 범위를 넘어가지 않으면
-        if (1 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= gridMatrixNum
-            && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
+        if (0 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= (gridMatrixNum + 1)
+            && 0 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= (gridMatrixNum + 1))
         {
             // 이동할 곳에 플레이어가 없으면
             if (((gridPositionX + (int)MoveDirection.x) == playerGridPositionX && (gridPositionY + (int)MoveDirection.y) == playerGridPositionY) == false)
@@ -130,8 +130,8 @@ public class MonsterController : MonoBehaviour
 
     private void SetPositionInGrid()
     {
-        float startValue = -(gridMatrixNum / 2) * gridSize;
-        for (int i = 1; i <= gridMatrixNum; ++i)
+        float startValue = -((gridMatrixNum + 2) / 2) * gridSize;
+        for (int i = 0; i <= gridMatrixNum + 1; ++i)
         {
             positionInGrid[i] = Mathf.Round(startValue * 10) * 0.1f;    // 소수점 둘째자리에서 반올림
             startValue += gridSize;
@@ -187,8 +187,8 @@ public class MonsterController : MonoBehaviour
         }
 
         // 그리드 범위를 넘어가지 않으면
-        if (1 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= gridMatrixNum
-            && 1 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= gridMatrixNum)
+        if (0 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= (gridMatrixNum + 1)
+            && 0 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= (gridMatrixNum + 1))
         {
             gridPositionX += (int)MoveDirection.x;
             gridPositionY += (int)MoveDirection.y;

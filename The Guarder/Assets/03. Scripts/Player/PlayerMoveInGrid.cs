@@ -150,7 +150,7 @@ public class PlayerMoveInGrid : MonoBehaviour
         {
             int twoStepGridPositionX = nextGridPositionX + (int)MoveDirection.x;
             int twoStepGridPositionY = nextGridPositionY + (int)MoveDirection.y;
-            twoStepNextTurnKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(twoStepGridPositionX, twoStepGridPositionY);
+            twoStepNextTurnKill = MonsterManager.GetComponent<MonsterManager>().KillCheckNextTurn(twoStepGridPositionX, twoStepGridPositionY);
         
             if (twoStepNextTurnKill == true)
             {

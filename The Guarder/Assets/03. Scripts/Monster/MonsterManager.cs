@@ -20,30 +20,33 @@ public class MonsterManager : MonoBehaviour
     private int playerGridPositionX;
     private int playerGridPositionY;
 
+    private bool isCreateMonster = false;
+
     public GameObject GameSceneManager;
     public GameObject NextWaveObject;
     public GameObject MonsterPrefeb;
 
     void Start()
     {
-        ResetMonsterManager();
         SetMonsterStartGridPosition();
+        ResetMonsterManager();
     }
     public void MoveOnToNextStep()
     {
         MoveMonsters();
-        CreateMonsters();
         CreateNextWave();
+        CreateMonsters();
         DrawMonsterMap();
     }
 
     public void ResetMonsterManager()
     {
+        isCreateMonster = false;
         DestroyMpnsters();
         ApplyGameLevel();
         ResetMonsterMap();
-        ResetNextWave();
         numberOfMonsters = 0;
+        ResetNextWave();
     }
 
     
@@ -51,7 +54,7 @@ public class MonsterManager : MonoBehaviour
     {
         for (int i = 0; i < 9; ++i)
         {
-            for (int j = 0; j < 8; ++j)
+            for (int j = 0; j < 9; ++j)
             {
                 monsterMap[i, j] = 0;
             }
@@ -94,6 +97,7 @@ public class MonsterManager : MonoBehaviour
     }
     private void CreateMonsters()
     {
+        isCreateMonster = true;
         SetPlayerGridPosition();
         for (int i = 0; i < 28; ++i)
         {
@@ -124,19 +128,22 @@ public class MonsterManager : MonoBehaviour
                     monster.GetComponent<MonsterController>().SetMonsterStatus(moveDirectionNum, monsterStartGridPosition[i, 1], monsterStartGridPosition[i, 0], 1);
                     monster.transform.SetParent(this.transform, false);
                     numberOfMonsters++;
-                    nextWave[i] = false;
                 }
             }
-        }
-
-        for (int i = 0; i < 28; ++i)
-        {
-            NextWaveObject.transform.GetChild(i).gameObject.SetActive(nextWave[i]);
         }
     }
     private void CreateFirstWave()
     {
         int maxNumberOfNextWaveMonster = 1;
+
+        if (isCreateMonster == true)
+        {
+            for (int i = 0; i < 28; ++i)
+            {
+                NextWaveObject.transform.GetChild(i).gameObject.SetActive(false);
+                nextWave[i] = false;
+            }
+        }
 
         while (maxNumberOfNextWaveMonster > 0)
         {
@@ -152,10 +159,22 @@ public class MonsterManager : MonoBehaviour
         {
             NextWaveObject.transform.GetChild(i).gameObject.SetActive(nextWave[i]);
         }
+        isCreateMonster = false;
+
+        CreateMonsters();
     }
     private void CreateNextWave()
     {
         waveCount--;
+
+        if (isCreateMonster == true)
+        {
+            for (int i = 0; i < 28; ++i)
+            {
+                NextWaveObject.transform.GetChild(i).gameObject.SetActive(false);
+                nextWave[i] = false;
+            }
+        }
 
         if (waveCount < 1)
         {
@@ -176,6 +195,7 @@ public class MonsterManager : MonoBehaviour
             {
                 NextWaveObject.transform.GetChild(i).gameObject.SetActive(nextWave[i]);
             }
+            isCreateMonster = false;
         }
     }
 
@@ -239,7 +259,7 @@ public class MonsterManager : MonoBehaviour
         bool canKill = true;
 
         // 위에서 내려오는 몬스터 체크
-        if ((y + 1) <= 7 && monsterMap[y + 1, x] / 100 == 3)
+        if ((y + 1) <= 8 && monsterMap[y + 1, x] / 100 == 3)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
@@ -260,7 +280,7 @@ public class MonsterManager : MonoBehaviour
             }
         }
         // 오른쪽에서 왼쪽으로 오는 몬스터 체크
-        else if ((x + 1) <= 7 && monsterMap[y, x + 1] / 100 == 4)
+        else if ((x + 1) <= 8 && monsterMap[y, x + 1] / 100 == 4)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
@@ -281,7 +301,7 @@ public class MonsterManager : MonoBehaviour
             }
         }
         // 아래에서 올라 오는 몬스터 체크
-        else if ((y - 1) >= 1 && monsterMap[y - 1, x] / 100 == 1)
+        else if ((y - 1) >= 0 && monsterMap[y - 1, x] / 100 == 1)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
@@ -302,7 +322,7 @@ public class MonsterManager : MonoBehaviour
             }
         }
         // 왼쪽에서 오른쪽으로 오는 몬스터 체크
-        else if ((x - 1) >= 1 && monsterMap[y, x - 1] / 100 == 2)
+        else if ((x - 1) >= 0 && monsterMap[y, x - 1] / 100 == 2)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
@@ -324,6 +344,15 @@ public class MonsterManager : MonoBehaviour
         }
         if (killMonsterNumber > 0)
         {
+            for (int i = 0; i < 28; ++i)
+            {
+                int monsterGridPositionXY = this.transform.GetChild(killMonsterNumber).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+                if ((monsterGridPositionXY / 10) == monsterStartGridPosition[i, 0] && (monsterGridPositionXY % 10) == monsterStartGridPosition[i, 1])
+                {
+                    NextWaveObject.transform.GetChild(i).gameObject.SetActive(false);
+                    nextWave[i] = false;
+                }
+            }
             this.transform.GetChild(killMonsterNumber).gameObject.GetComponent<MonsterController>().MoveAndDie();
             numberOfMonsters--;
             return true;
@@ -348,63 +377,63 @@ public class MonsterManager : MonoBehaviour
     private void SetMonsterStartGridPosition()
     {
         monsterStartGridPosition[0, 0] = 1;
-        monsterStartGridPosition[0, 1] = 7;
+        monsterStartGridPosition[0, 1] = 8;
         monsterStartGridPosition[1, 0] = 2;
-        monsterStartGridPosition[1, 1] = 7;
+        monsterStartGridPosition[1, 1] = 8;
         monsterStartGridPosition[2, 0] = 3;
-        monsterStartGridPosition[2, 1] = 7;
+        monsterStartGridPosition[2, 1] = 8;
         monsterStartGridPosition[3, 0] = 4;
-        monsterStartGridPosition[3, 1] = 7;
+        monsterStartGridPosition[3, 1] = 8;
         monsterStartGridPosition[4, 0] = 5;
-        monsterStartGridPosition[4, 1] = 7;
+        monsterStartGridPosition[4, 1] = 8;
         monsterStartGridPosition[5, 0] = 6;
-        monsterStartGridPosition[5, 1] = 7;
+        monsterStartGridPosition[5, 1] = 8;
         monsterStartGridPosition[6, 0] = 7;
-        monsterStartGridPosition[6, 1] = 7;
+        monsterStartGridPosition[6, 1] = 8;
 
-        monsterStartGridPosition[7, 0] = 7;
+        monsterStartGridPosition[7, 0] = 8;
         monsterStartGridPosition[7, 1] = 7;
-        monsterStartGridPosition[8, 0] = 7;
+        monsterStartGridPosition[8, 0] = 8;
         monsterStartGridPosition[8, 1] = 6;
-        monsterStartGridPosition[9, 0] = 7;
+        monsterStartGridPosition[9, 0] = 8;
         monsterStartGridPosition[9, 1] = 5;
-        monsterStartGridPosition[10, 0] = 7;
+        monsterStartGridPosition[10, 0] = 8;
         monsterStartGridPosition[10, 1] = 4;
-        monsterStartGridPosition[11, 0] = 7;
+        monsterStartGridPosition[11, 0] = 8;
         monsterStartGridPosition[11, 1] = 3;
-        monsterStartGridPosition[12, 0] = 7;
+        monsterStartGridPosition[12, 0] = 8;
         monsterStartGridPosition[12, 1] = 2;
-        monsterStartGridPosition[13, 0] = 7;
+        monsterStartGridPosition[13, 0] = 8;
         monsterStartGridPosition[13, 1] = 1;
 
         monsterStartGridPosition[14, 0] = 7;
-        monsterStartGridPosition[14, 1] = 1;
+        monsterStartGridPosition[14, 1] = 0;
         monsterStartGridPosition[15, 0] = 6;
-        monsterStartGridPosition[15, 1] = 1;
+        monsterStartGridPosition[15, 1] = 0;
         monsterStartGridPosition[16, 0] = 5;
-        monsterStartGridPosition[16, 1] = 1;
+        monsterStartGridPosition[16, 1] = 0;
         monsterStartGridPosition[17, 0] = 4;
-        monsterStartGridPosition[17, 1] = 1;
+        monsterStartGridPosition[17, 1] = 0;
         monsterStartGridPosition[18, 0] = 3;
-        monsterStartGridPosition[18, 1] = 1;
+        monsterStartGridPosition[18, 1] = 0;
         monsterStartGridPosition[19, 0] = 2;
-        monsterStartGridPosition[19, 1] = 1;
+        monsterStartGridPosition[19, 1] = 0;
         monsterStartGridPosition[20, 0] = 1;
-        monsterStartGridPosition[20, 1] = 1;
+        monsterStartGridPosition[20, 1] = 0;
 
-        monsterStartGridPosition[21, 0] = 1;
+        monsterStartGridPosition[21, 0] = 0;
         monsterStartGridPosition[21, 1] = 1;
-        monsterStartGridPosition[22, 0] = 1;
+        monsterStartGridPosition[22, 0] = 0;
         monsterStartGridPosition[22, 1] = 2;
-        monsterStartGridPosition[23, 0] = 1;
+        monsterStartGridPosition[23, 0] = 0;
         monsterStartGridPosition[23, 1] = 3;
-        monsterStartGridPosition[24, 0] = 1;
+        monsterStartGridPosition[24, 0] = 0;
         monsterStartGridPosition[24, 1] = 4;
-        monsterStartGridPosition[25, 0] = 1;
+        monsterStartGridPosition[25, 0] = 0;
         monsterStartGridPosition[25, 1] = 5;
-        monsterStartGridPosition[26, 0] = 1;
+        monsterStartGridPosition[26, 0] = 0;
         monsterStartGridPosition[26, 1] = 6;
-        monsterStartGridPosition[27, 0] = 1;
+        monsterStartGridPosition[27, 0] = 0;
         monsterStartGridPosition[27, 1] = 7;
     }
 }
