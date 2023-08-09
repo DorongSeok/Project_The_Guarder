@@ -22,6 +22,7 @@ public class MonsterController : MonoBehaviour
 
     public Vector3 MoveDirection { get; set; } = Vector3.zero;      // 이동 방향
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
+    private bool isDie = false;
     private float[] positionInGrid = new float[10];                 // 그리드 내의 position 값 저장
     [SerializeField]
     private int moveDirectionNumber;                                // 이동 방향 (1상, 2우, 3하, 4좌)
@@ -32,11 +33,10 @@ public class MonsterController : MonoBehaviour
 
     private void Awake()
     {
-        monsterMoveCount = 0;
         ResetMosnterPosition();
         SetPositionInGrid();
     }
-    public void SetMonsterStatus(int moveDirectionNumber, int gridPositionY, int gridPositionX, int hp = 1)
+    public void SetMonsterStatus(int moveDirectionNumber, int gridPositionY, int gridPositionX, int hp = 1, int monsterMoveCount = 0)
     {
         this.moveDirectionNumber = moveDirectionNumber;
 
@@ -69,6 +69,10 @@ public class MonsterController : MonoBehaviour
 
         this.hp = hp;
         SpriteHp.transform.GetChild(hp).gameObject.SetActive(true);
+
+        this.monsterMoveCount = monsterMoveCount;
+
+        isDie = false;
     }
 
     public void Move()
@@ -184,7 +188,6 @@ public class MonsterController : MonoBehaviour
     }
     public void Die()
     {
-        // 죽는 애니메이션 넣고 애니메이션 마지막에 Destroy 함수 호출
         Destroy(this.gameObject);
     }
     public void MoveAndDie()

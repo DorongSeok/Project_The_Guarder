@@ -35,8 +35,9 @@ public class MonsterManager : MonoBehaviour
     {
         MoveMonsters();
         CreateNextWave();
-        CreateMonsters();
+        GenerateMonsters();
         DrawMonsterMap();
+        Invoke("RegenerateMonsters", 0.2f);
     }
 
     public void ResetMonsterManager()
@@ -70,8 +71,59 @@ public class MonsterManager : MonoBehaviour
 
             // 100의 자리 = 방향, 10의 자리 = hp, 1의 자리 = 이동 횟수
             int monsterMapStatus = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetMonsterMapStatus();
-            
-            monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10] = monsterMapStatus;
+
+            if (monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10] == 0)
+            {
+                monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10] = monsterMapStatus;
+            }
+            else
+            {
+                int moveDirectionNumber;
+                int hp;
+                int moveCount;
+                int combinedMonsterMapStatus = monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10];
+
+                if(combinedMonsterMapStatus % 10 > monsterMapStatus % 10)
+                {
+                    moveDirectionNumber = monsterMapStatus / 100;
+                    hp = ((combinedMonsterMapStatus % 100) / 10) + ((monsterMapStatus % 100) / 10);
+                    if(hp>6)
+                    {
+                        hp = 6;
+                    }
+                    moveCount = monsterMapStatus % 10;
+                }
+                else
+                {
+                    moveDirectionNumber = combinedMonsterMapStatus / 100;
+                    hp = ((combinedMonsterMapStatus % 100) / 10) + ((monsterMapStatus % 100) / 10);
+                    if (hp > 6)
+                    {
+                        hp = 6;
+                    }
+                    moveCount = combinedMonsterMapStatus % 10;
+                }
+                monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10] = (moveDirectionNumber * 100) + (hp * 10) + moveCount;
+            }
+        }
+    }
+    private void RegenerateMonsters()
+    {
+        DestroyMpnsters();
+        numberOfMonsters = 0;
+
+        for (int i = 0; i < 9; ++i)
+        {
+            for (int j = 0; j < 9; ++j)
+            {
+                if (monsterMap[j, i] != 0)
+                {
+                    GameObject monster = Instantiate(MonsterPrefeb) as GameObject;
+                    monster.GetComponent<MonsterController>().SetMonsterStatus(monsterMap[j, i] / 100, j, i, (monsterMap[j, i] % 100) / 10, monsterMap[j, i] % 10);
+                    monster.transform.SetParent(this.transform, false);
+                    numberOfMonsters++;
+                }
+            }
         }
     }
     public void ResetNextWave()
@@ -95,7 +147,7 @@ public class MonsterManager : MonoBehaviour
             }
         }
     }
-    private void CreateMonsters()
+    private void GenerateMonsters()
     {
         isCreateMonster = true;
         SetPlayerGridPosition();
@@ -161,7 +213,7 @@ public class MonsterManager : MonoBehaviour
         }
         isCreateMonster = false;
 
-        CreateMonsters();
+        GenerateMonsters();
     }
     private void CreateNextWave()
     {
