@@ -28,6 +28,8 @@ public class MonsterController : MonoBehaviour
     [SerializeField]
     private int hp = 1;
 
+    public GameObject SpriteHp;
+
     private void Awake()
     {
         monsterMoveCount = 0;
@@ -45,12 +47,15 @@ public class MonsterController : MonoBehaviour
                 break;
             case (2):
                 MoveDirection = new Vector3(1, 0, 0);
+                this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -90);
                 break;
             case (3):
                 MoveDirection = new Vector3(0, -1, 0);
+                this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -180);
                 break;
             case (4):
                 MoveDirection = new Vector3(-1, 0, 0);
+                this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -270);
                 break;
             default:
                 Debug.Log("ERROR!!!: Monster MoveDirectionNumberSetting");
@@ -63,6 +68,7 @@ public class MonsterController : MonoBehaviour
         this.transform.position = new Vector3(positionInGrid[gridPositionX], positionInGrid[gridPositionY], 0);
 
         this.hp = hp;
+        SpriteHp.transform.GetChild(hp).gameObject.SetActive(true);
     }
 
     public void Move()
@@ -168,7 +174,9 @@ public class MonsterController : MonoBehaviour
 
     public void Damaged()
     {
+        SpriteHp.transform.GetChild(hp).gameObject.SetActive(false);
         hp--;
+        SpriteHp.transform.GetChild(hp).gameObject.SetActive(true);
         if (hp == 0)
         {
             Die();
