@@ -30,6 +30,8 @@ public class MonsterController : MonoBehaviour
 
     public GameObject SpriteHp;
 
+    private bool isDamagedNextTurn = false;
+
     private void Awake()
     {
         ResetMosnterPosition();
@@ -66,6 +68,7 @@ public class MonsterController : MonoBehaviour
 
         this.transform.position = new Vector3(positionInGrid[gridPositionX], positionInGrid[gridPositionY], 0);
 
+
         this.hp = hp;
         SpriteHp.transform.GetChild(hp).gameObject.SetActive(true);
 
@@ -84,25 +87,25 @@ public class MonsterController : MonoBehaviour
             && 0 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= (gridMatrixNum + 1))
         {
             // 이동할 곳에 플레이어가 없으면
-            if (((gridPositionX + (int)MoveDirection.x) == playerGridPositionX && (gridPositionY + (int)MoveDirection.y) == playerGridPositionY) == false)
+            //if (((gridPositionX + (int)MoveDirection.x) == playerGridPositionX && (gridPositionY + (int)MoveDirection.y) == playerGridPositionY) == false)
+
+            gridPositionX += (int)MoveDirection.x;
+            gridPositionY += (int)MoveDirection.y;
+
+            Vector3 moveDirection = Vector3.zero;
+            moveDirection.x = positionInGrid[gridPositionX];
+            moveDirection.y = positionInGrid[gridPositionY];
+            Vector3 end = moveDirection;
+
+            monsterMoveCount++;
+            StartCoroutine(GridSmoothMovement(end));
+            if (monsterMoveCount > 7)
             {
-                gridPositionX += (int)MoveDirection.x;
-                gridPositionY += (int)MoveDirection.y;
-
-                Vector3 moveDirection = Vector3.zero;
-                moveDirection.x = positionInGrid[gridPositionX];
-                moveDirection.y = positionInGrid[gridPositionY];
-                Vector3 end = moveDirection;
-
-                monsterMoveCount++;
-                StartCoroutine(GridSmoothMovement(end));
-                if (monsterMoveCount > 7)
-                {
-                    // Game Over
-                    Debug.Log("GAME OVER!!");
-                    GameObject.Find("GameManager").GetComponent<GameSceneController>().GameOver();
-                }
+                // Game Over
+                Debug.Log("GAME OVER!!");
+                GameObject.Find("GameManager").GetComponent<GameSceneController>().GameOver();
             }
+
         }
     }
     private IEnumerator GridSmoothMovement(Vector3 end)
@@ -173,69 +176,16 @@ public class MonsterController : MonoBehaviour
         return monsterMoveCount;
     }
 
-    public void Damaged()
-    {
-        SpriteHp.transform.GetChild(hp).gameObject.SetActive(false);
-        hp--;
-        SpriteHp.transform.GetChild(hp).gameObject.SetActive(true);
-        if (hp == 0)
-        {
-            Die();
-        }
-    }
     public void Die()
     {
         Destroy(this.gameObject);
     }
-    public void MoveAndDie()
+    public void SetIsDamagedNextTurn(bool _isDamagedNextTurn)
     {
-        if (hp == 0)
-        {
-            return;
-        }
-
-        // 그리드 범위를 넘어가지 않으면
-        if (0 <= gridPositionX + MoveDirection.x && gridPositionX + MoveDirection.x <= (gridMatrixNum + 1)
-            && 0 <= gridPositionY + MoveDirection.y && gridPositionY + MoveDirection.y <= (gridMatrixNum + 1))
-        {
-            gridPositionX += (int)MoveDirection.x;
-            gridPositionY += (int)MoveDirection.y;
-
-            Vector3 moveDirection = Vector3.zero;
-            moveDirection.x = positionInGrid[gridPositionX];
-            moveDirection.y = positionInGrid[gridPositionY];
-            Vector3 end = moveDirection;
-
-            monsterMoveCount++;
-            StartCoroutine(GridSmoothMovementAndDie(end));
-        }
-
-        else
-        {
-            // Game Over
-            Debug.Log("GAME OVER!!");
-            
-        }
+        isDamagedNextTurn = _isDamagedNextTurn;
     }
-    private IEnumerator GridSmoothMovementAndDie(Vector3 end)
+    public bool GetIsDamagedNextTurn()
     {
-        Vector3 start = transform.position;
-        float current = 0;
-        float percent = 0;
-
-        IsMove = true;
-
-        while (percent < 1)
-        {
-            current += Time.deltaTime;
-            percent = current / moveTime;
-
-            transform.position = Vector3.Lerp(start, end, percent);
-
-            yield return null;
-        }
-
-        IsMove = false;
-        Die();
+        return isDamagedNextTurn;
     }
 }

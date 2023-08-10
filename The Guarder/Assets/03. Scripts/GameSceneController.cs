@@ -51,6 +51,14 @@ public class GameSceneController : MonoBehaviour
             monsterManager.GetComponent<MonsterManager>().MoveOnToNextStep();
         }
     }
+    public void DamagedMonsterMoveOnToNextStep()
+    {
+        if (isGameOver == false)
+        {
+            monsterManager.GetComponent<MonsterManager>().DamagedMonsterMoveOnToNextStep();
+        }
+    }
+
 
     public int GetLevel()
     {
@@ -96,5 +104,9 @@ public class GameSceneController : MonoBehaviour
     {
         gameScore += _score;
         ScoreText.text = "Score : " + gameScore;
+        if (gameScore % 3000 == 0)
+        {
+            LevelUp();
+        }
     }
 }

@@ -18,11 +18,6 @@ public class PlayerMoveInGrid : MonoBehaviour
     private int nextGridPositionY;
     private int nextGridPositionX;
 
-    private bool oneStepKill = false;                               // 한 칸 이동 킬인지
-    private bool twoStepKill = false;                               // 두 칸 이동 킬인지
-    private bool oneStepNextTurnKill = false;                       // 한 칸 이동 다음턴 킬인지
-    private bool twoStepNextTurnKill = false;                       // 두 칸 이동 다음턴 킬인지
-
     public Vector3 MoveDirection { get; set; } = Vector3.zero;      // 이동 방향
     public bool IsMove { get; set; } = false;                       // 현재 이동 중인지
 
@@ -54,17 +49,13 @@ public class PlayerMoveInGrid : MonoBehaviour
                         nextGridPositionX = gridPositionX + (int)MoveDirection.x;
                         nextGridPositionY = gridPositionY + (int)MoveDirection.y;
 
+                        bool killAndAttackCheck = false;
+                        killAndAttackCheck = KillAndAttackCheck();
+
                         // 이동 하는 칸에 몬스터가 있는지 확인
-                        if(KillCheck() == true)
+                        if (killAndAttackCheck == true)
                         {
                             GameSceneManager.GetComponent<GameSceneController>().AddScore(100);
-                        }
-
-                        // 플레이어가 몬스터를 못 잡았으면 몬스터 이동
-                        if (oneStepKill == false && twoStepKill == false &&
-                            oneStepNextTurnKill == false && twoStepNextTurnKill == false)
-                        {
-                            GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
                         }
 
                         Vector3 moveDirection = Vector3.zero;
@@ -75,6 +66,17 @@ public class PlayerMoveInGrid : MonoBehaviour
 
                         gridPositionX = nextGridPositionX;
                         gridPositionY = nextGridPositionY;
+
+                        // 플레이어가 죽이지 못하는 몬스터는 따로 이동
+                        if (killAndAttackCheck == true)
+                        {
+                            GameSceneManager.GetComponent<GameSceneController>().DamagedMonsterMoveOnToNextStep();
+                        }
+                        // 플레이어가 몬스터를 못 때렸으면 몬스터 이동
+                        else
+                        {
+                            GameSceneManager.GetComponent<GameSceneController>().MoveOnToNextStep();
+                        }
 
                         yield return StartCoroutine(GridSmoothMovement(end));
                     }
@@ -111,30 +113,28 @@ public class PlayerMoveInGrid : MonoBehaviour
         IsMove = false;
     }
 
-    private bool KillCheck()
+    private bool KillAndAttackCheck()
     {
-        oneStepKill = false;
-        twoStepKill = false;
-        oneStepNextTurnKill = false;
-        twoStepNextTurnKill = false;
-        MonsterManager.GetComponent<MonsterManager>().DrawMonsterMap();
+        // 리턴값 1은 어택, 2는 킬
+        bool noStepCheck = false;           // 한 칸 이번 턴 확인
+        bool oneStepCheck = false;           // 두 칸 이번 턴 확인
+        bool oneStepNextTurnCheck = false;   // 한 칸 다음 턴 확인
+        bool twoStepNextTurnCheck = false;   // 두 칸 다음 턴 확인
 
-        // 한 칸 움직여서 잡을 애가 있는지
-        oneStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(nextGridPositionX, nextGridPositionY);
-        if (oneStepKill == true)
+        noStepCheck = MonsterManager.GetComponent<MonsterManager>().KillAndAttackCheckThisTurn(nextGridPositionX, nextGridPositionY);
+        if (noStepCheck == true) 
         {
             return true;
         }
 
-        // 두칸 움직여서 잡을 애가 있는지
         if (1 <= nextGridPositionX + MoveDirection.x && nextGridPositionX + MoveDirection.x <= gridMatrixNum
             && 1 <= nextGridPositionY + MoveDirection.y && nextGridPositionY + MoveDirection.y <= gridMatrixNum)
         {
             int twoStepGridPositionX = nextGridPositionX + (int)MoveDirection.x;
             int twoStepGridPositionY = nextGridPositionY + (int)MoveDirection.y;
-            twoStepKill = MonsterManager.GetComponent<MonsterManager>().KillCheckThisTurn(twoStepGridPositionX, twoStepGridPositionY);
+            oneStepCheck = MonsterManager.GetComponent<MonsterManager>().KillAndAttackCheckThisTurn(twoStepGridPositionX, twoStepGridPositionY);
 
-            if (twoStepKill == true)
+            if (oneStepCheck == true)
             {
                 nextGridPositionX = twoStepGridPositionX;
                 nextGridPositionY = twoStepGridPositionY;
@@ -143,21 +143,21 @@ public class PlayerMoveInGrid : MonoBehaviour
         }
 
         // 한 칸 움직여서 다음 턴에 잡을 애가 있는지
-        oneStepNextTurnKill = MonsterManager.GetComponent<MonsterManager>().KillCheckNextTurn(nextGridPositionX, nextGridPositionY);
-        if (oneStepNextTurnKill == true)
-        {
+        oneStepNextTurnCheck = MonsterManager.GetComponent<MonsterManager>().KillAndAttackCheckNextTurn(nextGridPositionX, nextGridPositionY);
+        if (oneStepNextTurnCheck == true)
+        { 
             return true;
         }
-        
+
         // 두 칸 움직여서 다음 턴에 잡을 애가 있는지
         if (1 <= nextGridPositionX + MoveDirection.x && nextGridPositionX + MoveDirection.x <= gridMatrixNum
             && 1 <= nextGridPositionY + MoveDirection.y && nextGridPositionY + MoveDirection.y <= gridMatrixNum)
         {
             int twoStepGridPositionX = nextGridPositionX + (int)MoveDirection.x;
             int twoStepGridPositionY = nextGridPositionY + (int)MoveDirection.y;
-            twoStepNextTurnKill = MonsterManager.GetComponent<MonsterManager>().KillCheckNextTurn(twoStepGridPositionX, twoStepGridPositionY);
-        
-            if (twoStepNextTurnKill == true)
+            twoStepNextTurnCheck = MonsterManager.GetComponent<MonsterManager>().KillAndAttackCheckNextTurn(twoStepGridPositionX, twoStepGridPositionY);
+
+            if (twoStepNextTurnCheck == true)
             {
                 nextGridPositionX = twoStepGridPositionX;
                 nextGridPositionY = twoStepGridPositionY;

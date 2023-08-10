@@ -16,6 +16,8 @@ public class MonsterManager : MonoBehaviour
     private int waveCount;
     [SerializeField]
     private int numberOfCreateNextWaveMonster;
+    [SerializeField]
+    private int monsterMaxHp;
 
     private int playerGridPositionX;
     private int playerGridPositionY;
@@ -40,10 +42,18 @@ public class MonsterManager : MonoBehaviour
         Invoke("RegenerateMonsters", 0.2f);
     }
 
+    public void DamagedMonsterMoveOnToNextStep()
+    {
+        MoveDamgedMonster();
+        DrawMonsterMap();
+        DamagedMonsterCheck();
+        Invoke("RegenerateMonsters", 0.2f);
+    }
+
     public void ResetMonsterManager()
     {
         isCreateMonster = false;
-        DestroyMpnsters();
+        DestroyMonsters();
         ApplyGameLevel();
         ResetMonsterMap();
         numberOfMonsters = 0;
@@ -103,13 +113,13 @@ public class MonsterManager : MonoBehaviour
                     }
                     moveCount = combinedMonsterMapStatus % 10;
                 }
-                monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10] = (moveDirectionNumber * 100) + (hp * 10) + moveCount;
+                monsterMap[monsterGridPositionXY % 10, monsterGridPositionXY / 10] = ((moveDirectionNumber * 100) + (hp * 10) + moveCount);
             }
         }
     }
     private void RegenerateMonsters()
     {
-        DestroyMpnsters();
+        DestroyMonsters();
         numberOfMonsters = 0;
 
         for (int i = 0; i < 9; ++i)
@@ -118,10 +128,17 @@ public class MonsterManager : MonoBehaviour
             {
                 if (monsterMap[j, i] != 0)
                 {
-                    GameObject monster = Instantiate(MonsterPrefeb) as GameObject;
-                    monster.GetComponent<MonsterController>().SetMonsterStatus(monsterMap[j, i] / 100, j, i, (monsterMap[j, i] % 100) / 10, monsterMap[j, i] % 10);
-                    monster.transform.SetParent(this.transform, false);
-                    numberOfMonsters++;
+                    if ((monsterMap[j, i] % 100) / 10 > 0)
+                    {
+                        GameObject monster = Instantiate(MonsterPrefeb) as GameObject;
+                        monster.GetComponent<MonsterController>().SetMonsterStatus(monsterMap[j, i] / 100, j, i, (monsterMap[j, i] % 100) / 10, monsterMap[j, i] % 10);
+                        monster.transform.SetParent(this.transform, false);
+                        numberOfMonsters++;
+                    }
+                    else
+                    {
+                        monsterMap[j, i] = 0;
+                    }
                 }
             }
         }
@@ -139,14 +156,26 @@ public class MonsterManager : MonoBehaviour
     {
         if (numberOfMonsters > 0)
         {
-            int playerGridPosition = GameSceneManager.GetComponent<GameSceneController>().GetPlayerGridPosition();
             for (int i = 1; i <= numberOfMonsters; ++i)
             {
-                this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().SetPlayerGridPosition(playerGridPosition);
                 this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().Move();
             }
         }
     }
+    private void MoveDamgedMonster()
+    {
+        if (numberOfMonsters > 0)
+        {
+            for (int i = 1; i <= numberOfMonsters; ++i)
+            {
+                if (this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetIsDamagedNextTurn() == true)
+                {
+                    this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().Move();
+                }
+            }
+        }
+    }
+
     private void GenerateMonsters()
     {
         isCreateMonster = true;
@@ -155,32 +184,28 @@ public class MonsterManager : MonoBehaviour
         {
             if (nextWave[i] == true)
             {
-                // 생성할 위치에 플레이어가 없으면 생성
-                if ((playerGridPositionX == monsterStartGridPosition[i, 0] && playerGridPositionY == monsterStartGridPosition[i, 1]) == false)
+                int moveDirectionNum = 0;
+                if (0 <= i && i <= 6)
                 {
-                    int moveDirectionNum = 0;
-                    if (0 <= i && i <= 6)
-                    {
-                        moveDirectionNum = 3;
-                    }
-                    else if (7 <= i && i <= 13)
-                    {
-                        moveDirectionNum = 4;
-                    }
-                    else if (14 <= i && i <= 20)
-                    {
-                        moveDirectionNum = 1;
-                    }
-                    else if (21 <= i && i <= 27)
-                    {
-                        moveDirectionNum = 2;
-                    }
-
-                    GameObject monster = Instantiate(MonsterPrefeb) as GameObject;
-                    monster.GetComponent<MonsterController>().SetMonsterStatus(moveDirectionNum, monsterStartGridPosition[i, 1], monsterStartGridPosition[i, 0], 1);
-                    monster.transform.SetParent(this.transform, false);
-                    numberOfMonsters++;
+                    moveDirectionNum = 3;
                 }
+                else if (7 <= i && i <= 13)
+                {
+                    moveDirectionNum = 4;
+                }
+                else if (14 <= i && i <= 20)
+                {
+                    moveDirectionNum = 1;
+                }
+                else if (21 <= i && i <= 27)
+                {
+                    moveDirectionNum = 2;
+                }
+
+                GameObject monster = Instantiate(MonsterPrefeb) as GameObject;
+                monster.GetComponent<MonsterController>().SetMonsterStatus(moveDirectionNum, monsterStartGridPosition[i, 1], monsterStartGridPosition[i, 0], Random.Range(1, monsterMaxHp + 1));
+                monster.transform.SetParent(this.transform, false);
+                numberOfMonsters++;
             }
         }
     }
@@ -260,36 +285,48 @@ public class MonsterManager : MonoBehaviour
             case 1:
                 numberOfCreateNextWaveMonster = 1;
                 nextWaveCount = 3;
+                monsterMaxHp = 1;
                 break;
             case 2:
                 numberOfCreateNextWaveMonster = 1;
                 nextWaveCount = 2;
+                monsterMaxHp = 1;
                 break;
             case 3:
                 numberOfCreateNextWaveMonster = 2;
                 nextWaveCount = 3;
+                monsterMaxHp = 1;
                 break;
             case 4:
                 numberOfCreateNextWaveMonster = 2;
                 nextWaveCount = 2;
+                monsterMaxHp = 2;
                 break;
             case 5:
                 numberOfCreateNextWaveMonster = 1;
                 nextWaveCount = 1;
+                monsterMaxHp = 2;
                 break;
             case 6:
                 numberOfCreateNextWaveMonster = 3;
                 nextWaveCount = 2;
+                monsterMaxHp = 2;
+                break;
+            case 7:
+                numberOfCreateNextWaveMonster = 3;
+                nextWaveCount = 2;
+                monsterMaxHp = 3;
                 break;
             default:
-                numberOfCreateNextWaveMonster = 3;
-                nextWaveCount = 1;
+                numberOfCreateNextWaveMonster = 4;
+                nextWaveCount = 3;
+                monsterMaxHp = 3;
                 break;
         }
         waveCount = nextWaveCount;
     }
 
-    public bool KillCheckThisTurn(int x, int y)
+    public bool KillAndAttackCheckThisTurn(int x, int y)
     {
         for (int i = numberOfMonsters; i >= 1; --i)
         {
@@ -297,122 +334,80 @@ public class MonsterManager : MonoBehaviour
 
             if ((monsterGridPositionXY / 10) == x && (monsterGridPositionXY % 10) == y)
             {
-                this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().Die();
-                numberOfMonsters--;
                 return true;
             }
         }
         return false;
     }
-    public bool KillCheckNextTurn(int x, int y)
+    public bool KillAndAttackCheckNextTurn(int x, int y)
     {
-        // 킬 할 수 있는 몬스터의 자식 객체 넘버
-        int killMonsterNumber = 0;
-        bool canKill = true;
-
+        bool damagedMonsterCheck = false;
         // 위에서 내려오는 몬스터 체크
-        if ((y + 1) <= 8 && monsterMap[y + 1, x] / 100 == 3)
+        if ((y + 1) <= 8 && monsterMap[y+1,x] /100 == 3)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
                 int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
                 if ((monsterGridPositionXY / 10) == x && (monsterGridPositionXY % 10) == (y + 1))
                 {
-                    killMonsterNumber = i;
-                    if (canKill == true)
-                    {
-                        canKill = false;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    damagedMonsterCheck = true;
+                    this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().SetIsDamagedNextTurn(true);
                     break;
                 }
             }
         }
         // 오른쪽에서 왼쪽으로 오는 몬스터 체크
-        else if ((x + 1) <= 8 && monsterMap[y, x + 1] / 100 == 4)
+        else if ((x + 1) <= 8 && monsterMap[y, x+1] / 100 == 4)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
                 int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
                 if ((monsterGridPositionXY / 10) == (x + 1) && (monsterGridPositionXY % 10) == y)
                 {
-                    killMonsterNumber = i;
-                    if (canKill == true)
-                    {
-                        canKill = false;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    damagedMonsterCheck = true;
+                    this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().SetIsDamagedNextTurn(true);
                     break;
                 }
             }
         }
         // 아래에서 올라 오는 몬스터 체크
-        else if ((y - 1) >= 0 && monsterMap[y - 1, x] / 100 == 1)
+        else if ((y - 1) >= 0&& monsterMap[y - 1, x] / 100 == 1)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
                 int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
                 if ((monsterGridPositionXY / 10) == x && (monsterGridPositionXY % 10) == (y - 1))
                 {
-                    killMonsterNumber = i;
-                    if (canKill == true)
-                    {
-                        canKill = false;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    damagedMonsterCheck = true;
+                    this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().SetIsDamagedNextTurn(true);
                     break;
                 }
             }
         }
         // 왼쪽에서 오른쪽으로 오는 몬스터 체크
-        else if ((x - 1) >= 0 && monsterMap[y, x - 1] / 100 == 2)
+        else if ((x - 1) >= 0&& monsterMap[y, x-1] / 100 == 2)
         {
             for (int i = numberOfMonsters; i >= 1; --i)
             {
                 int monsterGridPositionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
                 if ((monsterGridPositionXY / 10) == (x - 1) && (monsterGridPositionXY % 10) == y)
                 {
-                    killMonsterNumber = i;
-                    if (canKill == true)
-                    {
-                        canKill = false;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    damagedMonsterCheck = true;
+                    this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().SetIsDamagedNextTurn(true);
                     break;
                 }
             }
         }
-        if (killMonsterNumber > 0)
-        {
-            for (int i = 0; i < 28; ++i)
-            {
-                int monsterGridPositionXY = this.transform.GetChild(killMonsterNumber).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
-                if ((monsterGridPositionXY / 10) == monsterStartGridPosition[i, 0] && (monsterGridPositionXY % 10) == monsterStartGridPosition[i, 1])
-                {
-                    NextWaveObject.transform.GetChild(i).gameObject.SetActive(false);
-                    nextWave[i] = false;
-                }
-            }
-            this.transform.GetChild(killMonsterNumber).gameObject.GetComponent<MonsterController>().MoveAndDie();
-            numberOfMonsters--;
-            return true;
-        }
-        return false;
+        // 데미지를 입을 몬스터가 있는지 없는지 반환
+        return damagedMonsterCheck;
+    }
+    private void DamagedMonsterCheck()
+    {
+        SetPlayerGridPosition();
+        monsterMap[playerGridPositionY, playerGridPositionX] -= 10;
     }
 
-    private void DestroyMpnsters()
+    private void DestroyMonsters()
     {
         for (int i = numberOfMonsters; i >= 1; --i)
         {

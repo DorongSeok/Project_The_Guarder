@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4298163165959965094}
   - component: {fileID: 4399690130267897965}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3185399412443054145}
   - component: {fileID: 8529503835452347606}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4044755100219758905}
   - component: {fileID: 1929473752617047152}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +261,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5705545875251297889}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -293,7 +293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4315436460035027338}
   - component: {fileID: 1237061422471276544}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -377,7 +377,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7402816011599087528}
   - component: {fileID: 1420863581694181145}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -460,7 +460,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297397078196066415}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -583,7 +583,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7939756218500096502}
   - component: {fileID: 2969443721316070281}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hp6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -739,4 +739,3 @@ MonoBehaviour:
   moveDirectionNumber: 0
   hp: 1
   SpriteHp: {fileID: 6478936315162505807}
-  GameManager: {fileID: 133324122339493404, guid: cf627e1394f0723479577707b6f4a4a7, type: 3}

@@ -44,11 +44,11 @@ TagManager:
   - name: Background
     uniqueID: 2587110299
     locked: 0
-  - name: Monsters
-    uniqueID: 2483311021
-    locked: 0
   - name: Player
     uniqueID: 1464435255
+    locked: 0
+  - name: Monsters
+    uniqueID: 2483311021
     locked: 0
   - name: Frontground
     uniqueID: 367651983
