@@ -170,6 +170,22 @@ public class MonsterManager : MonoBehaviour
             {
                 if (this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetIsDamagedNextTurn() == true)
                 {
+                    int positionXY = this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().GetPositionXYInGrid();
+
+                    if (positionXY / 10 == 0 || positionXY / 10 == 8 ||
+                        positionXY % 10 == 0 || positionXY % 10 == 8)
+                    {
+                        for (int j = 0; j < 28; ++j)
+                        {
+                            if (positionXY / 10 == monsterStartGridPosition[j, 0] && positionXY % 10 == monsterStartGridPosition[j, 1])
+                            {
+                                NextWaveObject.transform.GetChild(j).gameObject.SetActive(false);
+                                nextWave[j] = false;
+                                break;
+                            }
+                        }
+                    }
+
                     this.transform.GetChild(i).gameObject.GetComponent<MonsterController>().Move();
                 }
             }
