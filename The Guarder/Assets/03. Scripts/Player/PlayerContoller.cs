@@ -112,6 +112,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = 0;
                     swipeY = 1;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
 
                     return true;
                 }

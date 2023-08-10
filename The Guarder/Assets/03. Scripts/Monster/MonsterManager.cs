@@ -27,6 +27,8 @@ public class MonsterManager : MonoBehaviour
     public GameObject GameSceneManager;
     public GameObject NextWaveObject;
     public GameObject MonsterPrefeb;
+    public GameObject DyingMonsterAnimation;
+    public GameObject Player;
 
     void Start()
     {
@@ -137,6 +139,8 @@ public class MonsterManager : MonoBehaviour
                     }
                     else
                     {
+                        GameObject dyingMonsterAnimation = Instantiate(DyingMonsterAnimation) as GameObject;
+                        dyingMonsterAnimation.transform.SetParent(Player.transform, false);
                         monsterMap[j, i] = 0;
                     }
                 }

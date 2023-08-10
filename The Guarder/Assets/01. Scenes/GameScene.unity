@@ -2952,6 +2952,10 @@ PrefabInstance:
       value: 367651983
       objectReference: {fileID: 0}
     - target: {fileID: 8513360925940155560, guid: a578a61274acd5b4b8347f59b408a446, type: 3}
+      propertyPath: Player
+      value: 
+      objectReference: {fileID: 369622646}
+    - target: {fileID: 8513360925940155560, guid: a578a61274acd5b4b8347f59b408a446, type: 3}
       propertyPath: MonsterPrefeb
       value: 
       objectReference: {fileID: 7447711681529967223, guid: 6248213d97e78bf499ba8a1ff3cd9282, type: 3}
@@ -2971,6 +2975,10 @@ PrefabInstance:
       propertyPath: gameSceneManager
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8513360925940155560, guid: a578a61274acd5b4b8347f59b408a446, type: 3}
+      propertyPath: DyingMonsterAnimation
+      value: 
+      objectReference: {fileID: 7751281525154865718, guid: 4fb33e9777e28cc4f9202d551c33ca8e, type: 3}
     - target: {fileID: 8526438660869941614, guid: a578a61274acd5b4b8347f59b408a446, type: 3}
       propertyPath: m_Layer
       value: 9
