@@ -38,6 +38,47 @@ public class PlayerContoller : MonoBehaviour
                 float x = Input.GetAxisRaw("Horizontal");
                 float y = Input.GetAxisRaw("Vertical");
 
+                // Swipe up
+                if (x == 0 && y > 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+                }
+                // Swipe down
+                else if (x == 0 && y < 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -180);
+                }
+                // Swipe left
+                else if (x < 0 && y == 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -270);
+                }
+                // Swipe right
+                else if (x > 0 && y == 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -90);
+                }
+                // Swipe up left
+                else if (x < 0 && y > 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -315);
+                }
+                // Swipe up right
+                else if (x > 0 && y > 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -45);
+                }
+                // Swipe down left
+                else if (x < 0 && y < 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -225);
+                }
+                // Swipe down right
+                else if (x > 0 && y < 0)
+                {
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -135);
+                }
+
                 playerMoveInGrid.MoveDirection = new Vector3(x, y, 0);
             }
         }
@@ -79,6 +120,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = 0;
                     swipeY = -1;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -180);
 
                     return true;
                 }
@@ -87,6 +129,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = -1;
                     swipeY = 0;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -270);
 
                     return true;
                 }
@@ -95,6 +138,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = 1;
                     swipeY = 0;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -90);
 
                     return true;
                 }
@@ -103,6 +147,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = -1;
                     swipeY = 1;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -315);
 
                     return true;
                 }
@@ -111,6 +156,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = 1;
                     swipeY = 1;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -45);
 
                     return true;
                 }
@@ -119,6 +165,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = -1;
                     swipeY = -1;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -225);
 
                     return true;
                 }
@@ -127,6 +174,7 @@ public class PlayerContoller : MonoBehaviour
                 {
                     swipeX = 1;
                     swipeY = -1;
+                    this.transform.GetChild(0).gameObject.transform.rotation = Quaternion.Euler(0, 0, -135);
 
                     return true;
                 }

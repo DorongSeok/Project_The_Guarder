@@ -2247,14 +2247,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 232498099212312624, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 232498099212312624, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 232498099212312624, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -2297,10 +2289,6 @@ PrefabInstance:
     - target: {fileID: 6459309260035576611, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 6459309260035576611, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
-      propertyPath: m_Layer
-      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8132733459883267541, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
       propertyPath: MonsterManager
