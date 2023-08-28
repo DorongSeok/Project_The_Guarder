@@ -2290,6 +2290,38 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: ColorModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: InitialModule.rotation3D
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: EmissionModule.rateOverDistance.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7635850192363795496, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key1.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8132733459883267541, guid: 2692c3f51ca00a64cb587ef6ea69d4ff, type: 3}
       propertyPath: MonsterManager
       value: 

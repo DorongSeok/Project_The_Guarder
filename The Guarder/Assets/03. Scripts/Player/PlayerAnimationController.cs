@@ -17,10 +17,8 @@ public class PlayerAnimationController : MonoBehaviour
 
     void Start()
     {
-        //upNowMode = PlayerUpIdleAnimation;
-        //downNowMode = PlayerDownIdleAnimation;
-        upNowMode = PlayerUpMoveAnimation;
-        downNowMode = PlayerDownMoveAnimation;
+        upNowMode = PlayerUpIdleAnimation;
+        downNowMode = PlayerDownIdleAnimation;
     }
     void FixedUpdate()
     {
@@ -32,15 +30,11 @@ public class PlayerAnimationController : MonoBehaviour
     {
         if(_animation == "Idle")
         {
-            Debug.Log("Idle");
-
             upNowMode = PlayerUpIdleAnimation;
             downNowMode = PlayerDownIdleAnimation;
         }
         else if (_animation == "Move")
         {
-            Debug.Log("Move");
-
             upNowMode = PlayerUpMoveAnimation;
             downNowMode = PlayerDownMoveAnimation;
         }
