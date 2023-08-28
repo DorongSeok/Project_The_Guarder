@@ -94,6 +94,9 @@ public class PlayerMoveInGrid : MonoBehaviour
 
     private IEnumerator GridSmoothMovement(Vector3 end)
     {
+        // 무브 애니메이션으로 변경
+        this.GetComponent<PlayerAnimationController>().ChangePlayerAnimation("Move");
+
         Vector3 start = transform.position;
         float current = 0;
         float percent = 0;
@@ -111,6 +114,9 @@ public class PlayerMoveInGrid : MonoBehaviour
         }
 
         IsMove = false;
+
+        // 아이들 애니메이션으로 변경
+        this.GetComponent<PlayerAnimationController>().ChangePlayerAnimation("Idle");
     }
 
     private bool KillAndAttackCheck()

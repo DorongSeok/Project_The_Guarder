@@ -118,6 +118,7 @@ GameObject:
   - component: {fileID: 7284138605279627094}
   - component: {fileID: 4041421819938870540}
   - component: {fileID: 8132733459883267541}
+  - component: {fileID: 1326465044388759035}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -200,6 +201,24 @@ MonoBehaviour:
   gridPositionX: 0
   GameSceneManager: {fileID: 0}
   MonsterManager: {fileID: 0}
+--- !u!114 &1326465044388759035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6459309260035576611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fbe992f286fe694097d485935a9601e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerUpAnimator: {fileID: 5580157522756355379}
+  PlayerDownAnimator: {fileID: 450913773649493189}
+  PlayerUpIdleAnimation: Player_Idle_Up
+  PlayerDownIdleAnimation: Player_Idle_Down
+  PlayerUpMoveAnimation: Player_Move_Up
+  PlayerDownMoveAnimation: Player_Move_Down
 --- !u!1 &7436719164921442865
 GameObject:
   m_ObjectHideFlags: 0
